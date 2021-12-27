@@ -1,14 +1,13 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Skybrud.Essentials.Json;
 using Skybrud.Essentials.Json.Extensions;
 using Skybrud.LinkPicker.PropertyEditors;
-using Superpower;
-using Umbraco.Core;
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Web;
-using Umbraco.Web.Composing;
+using System;
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Extensions;
 
 namespace Skybrud.LinkPicker.Models {
 
@@ -44,9 +43,9 @@ namespace Skybrud.LinkPicker.Models {
 
         #region Constructors
 
-        public LinkPickerLink(JObject obj) : this(obj, Current.UmbracoContext, null) { }
+        public LinkPickerLink(JObject obj, IUmbracoContext umbracoContext) : this(obj, umbracoContext, null) { }
 
-        internal LinkPickerLink(JObject obj, UmbracoContext context, LinkConfiguration config) {
+        internal LinkPickerLink(JObject obj, IUmbracoContext context, LinkConfiguration config) {
 
             // TODO: Should "Udi" property be of type Udi?
 
@@ -56,23 +55,23 @@ namespace Skybrud.LinkPicker.Models {
             Url = obj.GetString("url");
             Type = obj.GetEnum("type", LinkPickerType.Url);
 
-            Key = string.IsNullOrWhiteSpace(Udi) ? Guid.Empty : GuidUdi.Parse(Udi).Guid;
+            Udi udi = string.IsNullOrWhiteSpace(Udi) ? null : UdiParser.Parse(Udi);
 
             switch (Type) {
 
                 // TODO: Update "Name" property as well if permitted by "config"
 
                 case LinkPickerType.Content: {
-                    var c = context?.Content.GetById(Key);
-                    if (c != null) Url = c.Url;
-                    break;
-                }
+                        var c = udi == null ? null : context?.Content.GetById(udi);
+                        if (c != null) Url = c.Url();
+                        break;
+                    }
 
                 case LinkPickerType.Media: {
-                    var m = context?.Media.GetById(Key);
-                    if (m != null) Url = m.Url;
-                    break;
-                }
+                        var m = udi == null ? null : context?.Media.GetById(udi);
+                        if (m != null) Url = m.Url();
+                        break;
+                    }
 
             }
 
@@ -99,7 +98,7 @@ namespace Skybrud.LinkPicker.Models {
             Type = type;
             Target = target;
             Anchor = anchor;
-            if (GuidUdi.TryParse(udi, out GuidUdi guidUdi)) Key = guidUdi.Guid;
+            if (UdiParser.TryParse(udi, out GuidUdi guidUdi)) Key = guidUdi.Guid;
         }
 
         /// <summary>
@@ -110,7 +109,7 @@ namespace Skybrud.LinkPicker.Models {
         /// <param name="target">The target value of the link.</param>
         /// <param name="anchor">The anchor value of the link.</param>
         public LinkPickerLink(IPublishedContent item, string name, string target, string anchor) {
-            
+
             if (item == null) throw new ArgumentNullException(nameof(item));
 
             switch (item.ItemType) {
@@ -120,7 +119,7 @@ namespace Skybrud.LinkPicker.Models {
                     Key = item.Key;
                     Udi = new GuidUdi("document", item.Key).ToString();
                     Name = name ?? item.Name;
-                    Url = item.Url;
+                    Url = item.Url();
                     Type = LinkPickerType.Content;
                     Target = target;
                     Anchor = anchor;
@@ -131,7 +130,7 @@ namespace Skybrud.LinkPicker.Models {
                     Key = item.Key;
                     Udi = new GuidUdi("media", item.Key).ToString();
                     Name = name ?? item.Name;
-                    Url = item.Url;
+                    Url = item.Url();
                     Type = LinkPickerType.Media;
                     Target = target;
                     Anchor = anchor;
@@ -147,14 +146,14 @@ namespace Skybrud.LinkPicker.Models {
         #endregion
 
         #region Static methods
-        
+
         /// <summary>
         /// Deseralizes the specified JSON string into an instance of <see cref="LinkPickerLink"/>.
         /// </summary>
         /// <param name="json">The raw JSON to be parsed.</param>
-        public static LinkPickerLink Deserialize(string json) {
+        public static LinkPickerLink Deserialize(string json, IUmbracoContext umbracoContext) {
             if (json == null) return null;
-            if (json.StartsWith("{") && json.EndsWith("}")) return JsonUtils.ParseJsonObject(json, x => new LinkPickerLink(x));
+            if (json.StartsWith("{") && json.EndsWith("}")) return JsonUtils.ParseJsonObject(json, x => new LinkPickerLink(x, umbracoContext));
             return null;
         }
 

@@ -1,15 +1,13 @@
 ﻿using Skybrud.LinkPicker.Factories;
-using Umbraco.Core;
-using Umbraco.Core.Composing;
+using Umbraco.Cms.Core.Composing;
+using Umbraco.Cms.Core.DependencyInjection;
 
 namespace Skybrud.LinkPicker.Composers {
-    
-    internal class LinkPickerComposer : IUserComposer {
-        
-        public void Compose(Composition composition) {
-            composition.DataValueReferenceFactories().Append<LinkReferenceFactory>();
-        }
 
+    internal class LinkPickerComposer : IComposer {
+        public void Compose(IUmbracoBuilder builder) {
+            builder.DataValueReferenceFactories().Append<LinkReferenceFactory>();
+        }
     }
 
 }

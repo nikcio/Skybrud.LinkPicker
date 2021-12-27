@@ -1,22 +1,29 @@
-﻿using System.Collections.Generic;
-using Skybrud.LinkPicker.Models;
+﻿using Skybrud.LinkPicker.Models;
 using Skybrud.LinkPicker.PropertyEditors;
-using Umbraco.Core;
-using Umbraco.Core.Models.Editors;
-using Umbraco.Core.PropertyEditors;
+using System.Collections.Generic;
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Models.Editors;
+using Umbraco.Cms.Core.PropertyEditors;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Extensions;
 
 namespace Skybrud.LinkPicker.Factories {
 
     internal class LinkReferenceFactory : IDataValueReferenceFactory, IDataValueReference {
+        private readonly IUmbracoContext umbracoContext;
+
+        public LinkReferenceFactory(IUmbracoContextAccessor umbracoContextAccessor) {
+            umbracoContextAccessor.TryGetUmbracoContext(out umbracoContext);
+        }
 
         public IDataValueReference GetDataValueReference() => this;
 
         public IEnumerable<UmbracoEntityReference> GetReferences(object value) {
-            
+
             List<UmbracoEntityReference> references = new List<UmbracoEntityReference>();
             if (value is not string json) return references;
 
-            LinkPickerLink link = LinkPickerLink.Deserialize(json);
+            LinkPickerLink link = LinkPickerLink.Deserialize(json, umbracoContext);
             if (link == null) return references;
 
             switch (link.Type) {
@@ -28,9 +35,9 @@ namespace Skybrud.LinkPicker.Factories {
                 case LinkPickerType.Media:
                     references.Add(new UmbracoEntityReference(new GuidUdi("media", link.Key)));
                     break;
-                
+
             }
-            
+
             return references;
 
         }

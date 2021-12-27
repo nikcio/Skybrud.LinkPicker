@@ -1,11 +1,11 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Skybrud.Essentials.Json;
 using Skybrud.LinkPicker.Models;
-using Umbraco.Core;
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Core.PropertyEditors;
-using Umbraco.Web;
+using System;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.PropertyEditors;
+using Umbraco.Cms.Core.Web;
+using Umbraco.Extensions;
 
 namespace Skybrud.LinkPicker.PropertyEditors.ValueConverters {
 
@@ -30,9 +30,10 @@ namespace Skybrud.LinkPicker.PropertyEditors.ValueConverters {
         public override object ConvertSourceToIntermediate(IPublishedElement owner, IPublishedPropertyType propertyType, object source, bool preview) {
             return source is string str && str.DetectIsJson() ? JsonUtils.ParseJsonObject(str) : null;
         }
-        
+
         public override object ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object inter, bool preview) {
-            return inter is JObject json ? new LinkPickerLink(json, _umbracoContextAccessor.UmbracoContext, propertyType.DataType.ConfigurationAs<LinkConfiguration>()) : null;
+            _umbracoContextAccessor.TryGetUmbracoContext(out var umbracoContext);
+            return inter is JObject json ? new LinkPickerLink(json, umbracoContext, propertyType.DataType.ConfigurationAs<LinkConfiguration>()) : null;
         }
 
         public override object ConvertIntermediateToXPath(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object inter, bool preview) {

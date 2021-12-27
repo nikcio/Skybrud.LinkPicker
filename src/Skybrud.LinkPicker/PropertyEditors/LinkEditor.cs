@@ -1,12 +1,11 @@
-﻿using Umbraco.Core.Logging;
-using Umbraco.Core.PropertyEditors;
+﻿using Umbraco.Cms.Core.IO;
+using Umbraco.Cms.Core.PropertyEditors;
 
 namespace Skybrud.LinkPicker.PropertyEditors {
 
     [DataEditor(EditorAlias, EditorType.PropertyValue, "Skybrud LinkPicker Link", EditorView, ValueType = ValueTypes.Json, Group = "Skybrud.dk", Icon = "icon-link")]
     public class LinkEditor : DataEditor {
-
-        #region Constants
+        private readonly IIOHelper iOHelper;
 
         /// <summary>
         /// Gets the alias of the editor.
@@ -18,18 +17,16 @@ namespace Skybrud.LinkPicker.PropertyEditors {
         /// </summary>
         public const string EditorView = "/App_Plugins/Skybrud.LinkPicker/Views/Editors/Link.html";
 
-        #endregion
+        public LinkEditor(IDataValueEditorFactory dataValueEditorFactory, IIOHelper iOHelper, EditorType type = EditorType.PropertyValue) : base(dataValueEditorFactory, type) {
+            this.iOHelper = iOHelper;
+        }
 
-        #region Constructors
 
-        public LinkEditor(ILogger logger) : base(logger) { }
-
-        #endregion
 
         #region Member methods
 
         /// <inheritdoc />
-        protected override IConfigurationEditor CreateConfigurationEditor() => new LinkConfigurationEditor();
+        protected override IConfigurationEditor CreateConfigurationEditor() => new LinkConfigurationEditor(iOHelper);
 
         #endregion
 

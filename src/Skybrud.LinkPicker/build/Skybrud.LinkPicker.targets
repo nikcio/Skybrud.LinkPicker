@@ -1,0 +1,27 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <SkybrudLinkPickerContentFilesPath>$(MSBuildThisFileDirectory)..\App_Plugins\Skybrud.LinkPicker\**\*.*</SkybrudLinkPickerContentFilesPath>
+    </PropertyGroup>
+
+    <Target Name="CopySkybrudLinkPickerAssets" BeforeTargets="Build">
+        <ItemGroup>
+            <SkybrudLinkPickerContentFiles Include="$(SkybrudLinkPickerContentFilesPath)" />
+        </ItemGroup>
+        <Message Text="Copying Skybrud.LinkPicker files: $(SkybrudLinkPickerContentFilesPath) - #@(SkybrudLinkPickerContentFiles->Count()) files"  Importance="high" />
+        <Copy
+            SourceFiles="@(SkybrudLinkPickerContentFiles)"
+            DestinationFiles="@(SkybrudLinkPickerContentFiles->'$(MSBuildProjectDirectory)\App_Plugins\Skybrud.LinkPicker\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true" />
+
+    </Target>
+
+    <Target Name="ClearSkybrudLinkPickerAssets" BeforeTargets="Clean">
+        <ItemGroup>
+            <SkybrudLinkPickerDir Include="$(MSBuildProjectDirectory)\App_Plugins\Skybrud.LinkPicker\" />
+        </ItemGroup>
+        <Message Text="Clear old Skybrud.LinkPicker data"  Importance="high" />
+        <RemoveDir Directories="@(SkybrudLinkPickerDir)"  />
+    </Target>
+
+</Project>

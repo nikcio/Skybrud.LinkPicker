@@ -1,58 +1,45 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <ContentTargetFolders>.</ContentTargetFolders>
+        <Product>Skybrud.LinkPicker</Product>
+        <PackageId>Skybrud.LinkPicker</PackageId>
+        <Title>Skybrud.LinkPicker</Title>
+        <Product>...</Product>
+        <PackageTags>umbraco plugin package</PackageTags>
+        <RootNamespace>Skybrud.LinkPicker</RootNamespace>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <LangVersion>9.0</LangVersion>
-  </PropertyGroup>
+    <PropertyGroup>
+        <Version>2.0.0</Version>
+        <Authors>Anders Bjerner</Authors>
+        <Company>Skybrud.dk</Company>
+        <Description>Library with common purpose functionality for working with .NET.</Description>
+        <Copyright>Copyright © 2021</Copyright>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <Version>2.0.1</Version>
-    <Authors>Anders Bjerner</Authors>
-    <Company>Limbo</Company>
-    <Description>Library with common purpose functionality for working with .NET.</Description>
-    <Copyright>Copyright © 2021</Copyright>
-  </PropertyGroup>
+    <PropertyGroup>
+        <PackageId>Skybrud.LinkPicker</PackageId>
+        <PackageTags>Umbraco, Link, Picker, Media, Content, Url</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://packages.skybrud.dk/skybrud.linkpicker/</PackageProjectUrl>
+        <PackageIconUrl>http://www.skybrud.dk/img/5431sk/icon/favicon.ico</PackageIconUrl>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/skybrud/Skybrud.LinkPicker</RepositoryUrl>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <PackageId>Skybrud.LinkPicker</PackageId>
-    <PackageTags>Umbraco, Link, Picker, Media, Content, Url</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://packages.skybrud.dk/skybrud.linkpicker/</PackageProjectUrl>
-    <PackageIcon>Limbo.png</PackageIcon>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/skybrud/Skybrud.LinkPicker</RepositoryUrl>
-  </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Skybrud.Essentials" Version="1.1.34" />
+        <PackageReference Include="Umbraco.Cms.Web.Website" Version="9.0.0" />
+        <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="9.0.0" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Skybrud.Essentials" Version="1.1.30" />
-    <PackageReference Include="UmbracoCms.Web" Version="8.6.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="App_Plugins\Skybrud.LinkPicker\**\*.js" />
-    <Content Include="App_Plugins\Skybrud.LinkPicker\**\*.css" />
-    <Content Include="App_Plugins\Skybrud.LinkPicker\**\*.html" />
-    <Content Include="App_Plugins\Skybrud.LinkPicker\**\*.xml" />
-    <Content Include="App_Plugins\Skybrud.LinkPicker\package.manifest" />
-    <None Include="../build/Limbo.png" Pack="true" PackagePath="\"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="App_Plugins\Skybrud.LinkPicker\Styles\Default.css">
-      <DependentUpon>Default.less</DependentUpon>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="App_Plugins\Skybrud.LinkPicker\Styles\Default.min.css">
-      <DependentUpon>Default.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(ConfigurationName)'=='Release' AND '$(BuildTools)'=='1'">
-    <Exec Command="&quot;$(ProjectDir)..\build\Skybrud.BuildTools.Tasks.exe&quot; &quot;postBuild&quot; &quot;$(ConfigurationName)&quot; &quot;$(ProjectPath)&quot; &quot;$(TargetPath)&quot;" />
-  </Target>
-
+    <ItemGroup>
+        <Content Include="App_Plugins\Skybrud.LinkPicker\**\*.*">
+        </Content>
+        <None Include="build\**\*.*">
+            <Pack>True</Pack>
+            <PackagePath>buildTransitive</PackagePath>
+        </None>
+    </ItemGroup>
 </Project>
